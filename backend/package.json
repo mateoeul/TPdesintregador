@@ -2,10 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+    "type": "module",
   "scripts": {
-    "start": "",
-    "main": ""
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "author": "mateo",
   "license": "ISC",
