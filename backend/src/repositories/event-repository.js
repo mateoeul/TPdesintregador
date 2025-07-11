@@ -11,7 +11,7 @@ export default class EventRepository {
 
         try {
             await client.connect()
-            const sql = "SELECT * FROM "
+            const sql = "SELECT * FROM events"
             const result = await client.query(sql)
             await client.end()
             returnArray = result.rows

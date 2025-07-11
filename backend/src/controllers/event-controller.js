@@ -1,4 +1,5 @@
 import { Router } from "express";
+import {StatusCodes} from 'http-status-codes';
 import EventService from "../services/event-service.js";
 
 const router = Router();
@@ -9,10 +10,10 @@ router.get('', async (req, res) => {
     const returnArray = await service.getAllAsync()
 
     if (returnArray != null) {
-        respuesta = res.status(200).json(returnArray)
+        respuesta = res.status(StatusCodes.OK).json(returnArray)
     } 
     else{
-        respuesta = res.status(500).json("Internal error")
+        respuesta = res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal error")
     }
     return respuesta;
 })

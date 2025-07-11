@@ -2,10 +2,14 @@ import EventRepository from "../repositories/event-repository.js";
 
 export default class EventService {
 
-    getAllAsync  = async ()=>{
-        const repositorio = new EventRepository();
-        const returnArray = repositorio.getAllAsync()
+    constructor() {
+
+        this.eventRepository = new EventRepository();
+    }
+
+    getAllAsync = async () => {
+        const returnArray = await this.eventRepository.getAllAsync();
         return returnArray;
-    }   
+    }
 
 }

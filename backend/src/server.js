@@ -1,15 +1,18 @@
+import 'dotenv/config.js'
 import express from "express";
 import cors from "cors"
-import EventRouter from "./src/controllers/event-controller.js";
 
+//Routers
+import EventController from "./controllers/event-controller.js";        
 
 const app = express()
-const port = 3000; 
+const port =  process.env.PORT ?? 3000;
 
 app.use(cors())
 app.use(express.json())
 
-app.use('/api/event', EventRouter)
+app.use("/api/eventos", EventController)
+
 //app.use('/api/provinces', provinceRouter)
 
 app.listen(port, () => {
