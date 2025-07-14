@@ -7,8 +7,8 @@ export default class EventService {
         this.eventRepository = new EventRepository();
     }
 
-    getAllAsync = async () => {
-        const returnArray = await this.eventRepository.getAllAsync();
+    getAllAsync = async (name, startDate, description) => {
+        const returnArray = await this.eventRepository.getAllAsync(name, startDate, description);
         return returnArray;
     }
 

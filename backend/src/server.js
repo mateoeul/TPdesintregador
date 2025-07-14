@@ -11,7 +11,7 @@ const port =  process.env.PORT ?? 3000;
 app.use(cors())
 app.use(express.json())
 
-app.use("/api/eventos", EventController)
+app.use("/api/events", EventController)
 
 //app.use('/api/provinces', provinceRouter)
 

@@ -7,7 +7,9 @@ const service = new EventService();
 
 router.get('', async (req, res) => {
     let respuesta;
-    const returnArray = await service.getAllAsync()
+    const { name, startdate, tag } = req.query;
+
+    const returnArray = await service.getAllAsync(name, startdate, tag);
 
     if (returnArray != null) {
         respuesta = res.status(StatusCodes.OK).json(returnArray)
