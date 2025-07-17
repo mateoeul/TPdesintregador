@@ -6,18 +6,15 @@ const router = Router();
 const service = new EventService();
 
 router.get('', async (req, res) => {
-    let respuesta;
     const { name, startdate, tag } = req.query;
 
     const returnArray = await service.getAllAsync(name, startdate, tag);
 
     if (returnArray != null) {
-        respuesta = res.status(StatusCodes.OK).json(returnArray)
-    } 
-    else{
-        respuesta = res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal error")
+        return res.status(StatusCodes.OK).json(returnArray);
+    } else {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal error");
     }
-    return respuesta;
-})
+});
 
 export default router;
