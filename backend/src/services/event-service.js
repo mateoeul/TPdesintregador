@@ -8,4 +8,8 @@ export default class EventService {
     getAllAsync = async (name, startDate, tag) => {
         return await this.eventRepository.getAllAsync(name, startDate, tag);
     }
+    
+    getByIdAsync = async(id) =>{
+        return await this.eventRepository.getByIdAsync(id);
+    }
 }

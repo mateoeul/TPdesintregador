@@ -45,4 +45,18 @@ export default class EventRepository {
 
         return returnArray;
     }
+
+    getByIdAsync = async(id) =>{
+        const client = new Client(DBconfig);
+        try {
+            await client.connect();
+            const result = await client.query("SELECT * FROM events WHERE id = $1", [id]);
+            await client.end();
+            return result.rows[0]; // Devuelve solo un evento
+            
+        } catch (error) {
+            console.log("Error en getByIdAsync:", error);
+            return null;
+        }
+    }
 }
