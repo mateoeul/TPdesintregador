@@ -10,7 +10,9 @@ function validarEmail(email) {
 }
 
 const UserService = {
-    async register({ first_name, last_name, username, password }) {
+    async register(user) {
+        const { first_name, last_name, username, password } = user;
+        console.log('USER',user )
         if (!first_name || first_name.length < 3) {
             return { success: false, message: "El nombre debe tener al menos 3 letras." };
         }

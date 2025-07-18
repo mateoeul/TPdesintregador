@@ -4,7 +4,6 @@ import { StatusCodes } from "http-status-codes";
 
 const router = Router();
 
-// Registro de usuario
 router.post("/register", async (req, res) => {
     const { first_name, last_name, username, password } = req.body;
     const result = await UserService.register({ first_name, last_name, username, password });
@@ -15,7 +14,6 @@ router.post("/register", async (req, res) => {
     }
 });
 
-// Login de usuario
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const result = await UserService.login({ username, password });
