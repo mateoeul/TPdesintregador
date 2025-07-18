@@ -33,6 +33,7 @@ const UserService = {
         await UserRepository.create({ first_name, last_name, username, password: hashedPassword });
         return { success: true, message: "Usuario registrado correctamente." };
     },
+    
     async login({ username, password }) {
         if (!validarEmail(username)) {
             return {
