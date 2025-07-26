@@ -1,5 +1,4 @@
 import UserRepository from "../repositories/user-repository.js";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
@@ -29,8 +28,8 @@ const UserService = {
         if (existe) {
             return { success: false, message: "El usuario ya existe." };
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await UserRepository.create({ first_name, last_name, username, password: hashedPassword });
+        // Guarda la contraseña en texto plano (¡solo para práctica!)
+        await UserRepository.create({ first_name, last_name, username, password });
         return { success: true, message: "Usuario registrado correctamente." };
     },
     
@@ -48,7 +47,8 @@ const UserService = {
                 body: { success: false, message: "Usuario o clave inválida.", token: "" }
             };
         }
-        const valid = await bcrypt.compare(password, user.password);
+        // Compara la contraseña directamente
+        const valid = password === user.password;
         if (!valid) {
             return {
                 status: 401,

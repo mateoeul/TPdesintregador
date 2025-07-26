@@ -5,6 +5,7 @@ const { Client } = pkg;
 
 
 const UserRepository = {
+    
     async findByUsername(username) {
         const client = new Client(DBconfig)
         try {
@@ -16,12 +17,10 @@ const UserRepository = {
         } catch (error) {
             console.log("Error en findUsername:", error);
         }
-        
-
     },
+
     async create({ first_name, last_name, username, password }) {
         const client = new Client(DBconfig)
-        
         try {
             await client.connect()
             await client.query(

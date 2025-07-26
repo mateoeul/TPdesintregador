@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {StatusCodes} from 'http-status-codes';
 import EventService from "../services/event-service.js";
+import { authenticateToken } from "../middleware/auth-middleware.js";
 
 const router = Router();
 const service = new EventService();
@@ -25,6 +26,21 @@ router.get('/:id', async (req, res) => {
         res.status(StatusCodes.OK).json(event);  // Si el evento existe, devolverlo
     } else {
         res.status(StatusCodes.NOT_FOUND).send("Evento no encontrado");
+    }
+});
+
+// Aplicar middleware de autenticación solo en la ruta POST
+router.post('', authenticateToken, async (req, res) => {
+    const {name,description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance} = req.body;
+    
+    // Usar el ID del usuario logueado como id_creator_user
+    const id_creator_user = req.user.id;
+    
+    const event = await service.createEventAsync(name,description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
+    if (event) {
+        res.status(StatusCodes.OK).json(event);  // Si el evento existe, devolverlo
+    } else {
+        res.status(StatusCodes.NOT_FOUND).send("No se pudo crear el evento");
     }
 });
 

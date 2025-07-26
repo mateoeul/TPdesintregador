@@ -59,4 +59,20 @@ export default class EventRepository {
             return null;
         }
     }
+
+    createEventAsync = async(name,description, id_event_category, id_event_location,
+        start_date, duration_in_minutes, price, enabled_for_enrollment, 
+        max_assistance, id_creator_user) => 
+        {
+            const client = new Client(DBconfig);
+            try {
+                await client.connect();
+                const result = await client.query("INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", [name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user]);
+                await client.end();
+                return result.rows[0];
+            } catch (error) {
+                console.log("Error en createEventAsync:", error);
+                return null;
+            }
+        }
 }
