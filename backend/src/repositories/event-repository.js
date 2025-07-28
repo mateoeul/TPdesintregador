@@ -60,6 +60,23 @@ export default class EventRepository {
         }
     }
 
+    async existsEvent(name, start_date, id_event_location) {
+        const client = new Client(DBconfig);
+        try {
+            await client.connect();
+            const result = await client.query(
+                "SELECT 1 FROM events WHERE name = $1 AND start_date = $2 AND id_event_location = $3",
+                [name, start_date, id_event_location]
+            );
+            await client.end();
+            return result.rowCount > 0;
+        } catch (error) {
+            console.log("Error en existsEvent:", error);
+            await client.end();
+            return false;
+        }
+    }
+
     createEventAsync = async(name,description, id_event_category, id_event_location,
         start_date, duration_in_minutes, price, enabled_for_enrollment, 
         max_assistance, id_creator_user) => 
@@ -67,12 +84,52 @@ export default class EventRepository {
             const client = new Client(DBconfig);
             try {
                 await client.connect();
-                const result = await client.query("INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", [name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user]);
+                const result = await client.query("INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *", [name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user]);
                 await client.end();
                 return result.rows[0];
             } catch (error) {
                 console.log("Error en createEventAsync:", error);
+                await client.end();
                 return null;
             }
         }
+
+    updateEventAsync = async(id, name, description, id_event_category, id_event_location,
+        start_date, duration_in_minutes, price, enabled_for_enrollment, 
+        max_assistance) => 
+        {
+            const client = new Client(DBconfig);
+            try {
+                await client.connect();
+                const result = await client.query(`
+                    UPDATE events 
+                    SET name = $1, description = $2, id_event_category = $3, 
+                        id_event_location = $4, start_date = $5, duration_in_minutes = $6, 
+                        price = $7, enabled_for_enrollment = $8, max_assistance = $9
+                    WHERE id = $10 
+                    RETURNING *
+                `, [name, description, id_event_category, id_event_location, start_date, 
+                     duration_in_minutes, price, enabled_for_enrollment, max_assistance, id]);
+                await client.end();
+                return result.rows[0];
+            } catch (error) {
+                console.log("Error en updateEventAsync:", error);
+                await client.end();
+                return null;
+            }
+        }
+
+    deleteEventAsync = async(id) => {
+        const client = new Client(DBconfig);
+        try {
+            await client.connect();
+            const result = await client.query("DELETE FROM events WHERE id = $1 RETURNING *", [id]);
+            await client.end();
+            return result.rowCount > 0
+        } catch (error) {
+            console.log("Error en deleteEventAsync:", error);
+            await client.end();
+            return false;
+        }
+    }
 }

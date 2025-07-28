@@ -15,17 +15,20 @@ export default class EventService {
         return await this.eventRepository.getByIdAsync(id);
     }
 
-    createEventAsync = async(name,description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) => {
-        if (!name || !description || description.lenght < 3 || name.lenght < 3){
+    createEventAsync = async(name,description, id_event_category, id_event_location, 
+        start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, 
+        id_creator_user) => {        
+        if (!name || !description || description.length < 3 || name.length < 3){
+            console.log("Service: Error - nombre o descripción inválidos");
             return {
                 status: 400,
                 body: { success: false, message: "El nombre o la descripción son inválidos." }
             };
         }
-
         // Validar que max_assistance no sea mayor que max_capacity del event_location
         const eventLocation = await this.eventLocationRepository.getByIdAsync(id_event_location);
         if (!eventLocation) {
+            console.log("Service: Error - ubicación no existe");
             return {
                 status: 400,
                 body: { success: false, message: "La ubicación del evento no existe." }
@@ -33,18 +36,125 @@ export default class EventService {
         }
 
         if (price < 0 || max_assistance < 0 ) {
+            console.log("Service: Error - precio o asistencia negativos");
             return {
                 status: 400,
                 body: { success: false, message: "El precio o la asistencia máxima no pueden ser negativos." }
             };
         }
         if (max_assistance > eventLocation.max_capacity) {
+            console.log("Service: Error - asistencia excede capacidad");
             return {
                 status: 400,
                 body: { success: false, message: "La asistencia máxima no puede superar la capacidad del lugar." }
             };
         }
+        const exists = await this.eventRepository.existsEvent(name, start_date, id_event_location);
+        if (exists) {
+            return {
+                status: 400,
+                body: { success: false, message: "Ya existe un evento en esa fecha y lugar" }
+            };
+        }
 
-        return await this.eventRepository.createEventAsync(name,description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
+        console.log("Service: Todos los datos válidos, creando evento...");
+        const result = await this.eventRepository.createEventAsync(name,description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
+        
+        if (result) {
+            console.log("Service: Evento creado exitosamente");
+            return {
+                status: 200,
+                body: { success: true, data: result }
+            };
+        } else {
+            console.log("Service: Error al crear evento en BD");
+            return {
+                status: 500,
+                body: { success: false, message: "Error al crear el evento en la base de datos." }
+            };
+        }
     }
+
+    updateEventAsync = async(id, name,description, id_event_category, id_event_location, 
+        start_date, duration_in_minutes, price, enabled_for_enrollment, 
+        max_assistance) => {        
+        
+        if (!name || !description || description.length < 3 || name.length < 3)
+        {
+            console.log("Service: Error - nombre o descripción inválidos");
+            return {
+                status: 400,
+                body: { success: false, message: "El nombre o la descripción son inválidos." }
+            };
+        }
+        // Validar que max_assistance no sea mayor que max_capacity del event_location
+        const eventLocation = await this.eventLocationRepository.getByIdAsync(id_event_location);
+        if (!eventLocation) {
+            console.log("Service: Error - ubicación no existe");
+            return {
+                status: 400,
+                body: { success: false, message: "La ubicación del evento no existe." }
+            };
+        }
+
+        if (price < 0 || max_assistance < 0 ) {
+            console.log("Service: Error - precio o asistencia negativos");
+            return {
+                status: 400,
+                body: { success: false, message: "El precio o la asistencia máxima no pueden ser negativos." }
+            };
+        }
+        if (max_assistance > eventLocation.max_capacity) {
+            console.log("Service: Error - asistencia excede capacidad");
+            return {
+                status: 400,
+                body: { success: false, message: "La asistencia máxima no puede superar la capacidad del lugar." }
+            };
+        }
+        const exists = await this.eventRepository.existsEvent(name, start_date, id_event_location);
+        if (exists) {
+            return {
+                status: 400,
+                body: { success: false, message: "Ya existe un evento en esa fecha y lugar" }
+            };
+        }
+
+        console.log("Service: Todos los datos válidos, creando evento...");
+        const result = await this.eventRepository.updateEventAsync(id, name,description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance);
+        
+        if (result) {
+            console.log("Service: Evento actualizado exitosamente");
+            return {
+                status: 200,
+                body: { success: true, data: result }
+            };
+        } else {
+            console.log("Service: Error al actualizar el evento en BD");
+            return {
+                status: 500,
+                body: { success: false, message: "Error al actualizar el evento en la base de datos." }
+            };
+        }
+    }
+
+    deleteEventAsync = async(id) => {
+        const deleted = await this.eventRepository.deleteEventAsync(id);
+        if (deleted) {
+        return {
+            status: 200,
+            body: { success: true, message: "Evento eliminado correctamente" }
+        };
+    } else {
+        return {
+            status: 400,
+            body: { success: false, message: "No se pudo eliminar el evento" }
+        };
+    }
+    
+    }
+
 }
+
+
+
+

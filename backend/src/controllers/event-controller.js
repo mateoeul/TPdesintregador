@@ -36,12 +36,65 @@ router.post('', authenticateToken, async (req, res) => {
     // Usar el ID del usuario logueado como id_creator_user
     const id_creator_user = req.user.id;
     
-    const event = await service.createEventAsync(name,description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
-    if (event) {
-        res.status(StatusCodes.OK).json(event);  // Si el evento existe, devolverlo
+    const result = await service.createEventAsync(name,description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
+    
+    if (result && result.status === 200) {
+        res.status(StatusCodes.CREATED).json(result.body);
+    } else if (result && result.status === 400) {
+        res.status(StatusCodes.BAD_REQUEST).json(result.body);
     } else {
-        res.status(StatusCodes.NOT_FOUND).send("No se pudo crear el evento");
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "No se pudo crear el evento" });
     }
 });
+
+router.put('/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params; 
+    const {name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance} = req.body;
+    const userId = req.user.id;
+
+    const event = await service.getByIdAsync(id);
+    if (!event) {
+        return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Evento no encontrado" });
+    }
+    if (event.id_creator_user !== userId) {
+        return res.status(StatusCodes.FORBIDDEN).json({ success: false, message: "No tienes permiso para editar este evento" });
+    }
+
+    const result = await service.updateEventAsync(id, name,description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance);
+    
+    if (result && result.status === 200) {
+        res.status(StatusCodes.OK).json(result.body);
+    } else if (result && result.status === 400) {
+        res.status(StatusCodes.BAD_REQUEST).json(result.body);
+    } else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "No se pudo crear el evento" });
+    }
+});
+
+router.delete('/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const event = await service.getByIdAsync(id);
+    if (!event) {
+        return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Evento no encontrado" });
+    }
+    if (event.id_creator_user !== userId) {
+        return res.status(StatusCodes.FORBIDDEN).json({ success: false, message: "No tienes permiso para eliminar este evento" });
+    }
+
+    const result = await service.deleteEventAsync(id);
+
+    if (result && result.status === 200) {
+        res.status(StatusCodes.OK).json(result.body);
+    } else if (result && result.status === 400) {
+        res.status(StatusCodes.BAD_REQUEST).json(result.body);
+    } else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "No se pudo eliminar el evento" });
+    }
+
+});
+
+
 
 export default router;
