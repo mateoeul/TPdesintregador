@@ -132,4 +132,33 @@ export default class EventRepository {
             return false;
         }
     }
+
+    getEnrrolledUsersInEventByIdAsync = async(eventId) => {
+        const client = new Client(DBconfig);
+        try {
+            await client.connect();
+            const result = await client.query("SELECT * FROM event_enrollments WHERE id_event = $1", [eventId]);
+            await client.end();
+            return result.rows; // Devuelve todos los usuarios inscritos en el evento
+        } catch (error) {
+            console.log("Error en enrrolledUsersInEventAsync:", error);
+            await client.end();
+            return [];
+        }
+    }
+
+
+    enrollUserInEventAsync = async(eventId, userId, description, attended, observations, rating) => {
+        const client = new Client(DBconfig);
+        try {
+            await client.connect();
+            const result = await client.query("INSERT INTO event_enrollments (id_event, id_user, description, registration_date_time, attended, observations, rating) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *", [eventId, userId, description, new Date(), attended, observations, rating]);
+            await client.end();
+            return result.rows[0];
+        } catch (error) {
+            console.log("Error en enrollUserInEventAsync:", error);
+            await client.end();
+            return null;
+        }
+    }
 }

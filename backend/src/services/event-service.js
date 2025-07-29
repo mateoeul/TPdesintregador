@@ -150,9 +150,63 @@ export default class EventService {
             body: { success: false, message: "No se pudo eliminar el evento" }
         };
     }
-    
+
     }
 
+    enrollUserInEventAsync = async(eventId, userId, description, attended, observations, rating) => {
+
+        const event = await this.eventRepository.getByIdAsync(eventId);
+        const enrolledUsers = await this.eventRepository.getEnrrolledUsersInEventByIdAsync(eventId);
+        
+        function isTodayOrPast(date) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const eventDate = new Date(date);
+            eventDate.setHours(0,0,0,0);
+            return eventDate <= today;
+        }
+
+        if (!event.enabled_for_enrollment) {
+            return {
+                status: 400,
+                body: { success: false, message: "El evento no está habilitado para inscripción" }
+            };
+        }
+        if (enrolledUsers.length > event.max_assistance) {
+            return {
+                status: 400,
+                body: { success: false, message: "El evento ha alcanzado su capacidad máxima de asistencia" }
+            };
+        }
+        if (isTodayOrPast(event.start_date)) {
+            return {
+                status: 400,
+                body: { success: false, message: "No se puede inscribir a un evento que ya ha comenzado o es hoy" }
+            };
+        }
+
+        const isEnrrolled = enrolledUsers.some(user => user.id === userId);
+        if (isEnrrolled) {
+            return {
+                status: 400,
+                body: { success: false, message: "El usuario ya está inscrito en este evento" }
+            };
+        }
+
+        const result = await this.eventRepository.enrollUserInEventAsync(eventId, userId, description, attended, observations, rating);
+        
+        if (result) {
+            return {
+                status: 200,
+                body: { success: true, message: "Usuario inscrito exitosamente" }
+            };
+        } else {
+            return {
+                status: 500,
+                body: { success: false, message: "Error al inscribir al usuario en el evento" }
+            };
+        }
+    }
 }
 
 

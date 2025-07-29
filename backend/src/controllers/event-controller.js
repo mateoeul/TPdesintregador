@@ -95,6 +95,28 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 
 });
 
+router.post('/:id/enrollment', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const {description, attended, observations, rating} = req.body;
+    const userId = req.user.id;
+
+    const event = await service.getByIdAsync(id);
+    if (!event) {
+        return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Evento no encontrado" });
+    }
+    
+
+    const result = await service.enrollUserInEventAsync(id, userId, description, attended, observations, rating);
+
+    if (result && result.status === 200) {
+        res.status(StatusCodes.OK).json(result.body);
+    } else if (result && result.status === 400) {
+        res.status(StatusCodes.BAD_REQUEST).json(result.body);
+    } else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "No se pudo INSCRIBIR al evento" });
+    }
+
+});
 
 
 export default router;
