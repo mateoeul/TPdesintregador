@@ -1,6 +1,14 @@
 import EventRepository from "../repositories/event-repository.js";
 import EventLocationRepository from "../repositories/eventLocation-repository.js";
 
+function isTodayOrPast(date) {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const eventDate = new Date(date);
+    eventDate.setHours(0,0,0,0);
+    return eventDate <= today;
+}
+
 export default class EventService {
     constructor() {
         this.eventRepository = new EventRepository();
@@ -154,17 +162,8 @@ export default class EventService {
     }
 
     enrollUserInEventAsync = async(eventId, userId, description, attended, observations, rating) => {
-
         const event = await this.eventRepository.getByIdAsync(eventId);
         const enrolledUsers = await this.eventRepository.getEnrrolledUsersInEventByIdAsync(eventId);
-        
-        function isTodayOrPast(date) {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const eventDate = new Date(date);
-            eventDate.setHours(0,0,0,0);
-            return eventDate <= today;
-        }
 
         if (!event.enabled_for_enrollment) {
             return {
@@ -185,11 +184,11 @@ export default class EventService {
             };
         }
 
-        const isEnrrolled = enrolledUsers.some(user => user.id === userId);
+        const isEnrrolled = enrolledUsers.some(user => user.id_user === userId);
         if (isEnrrolled) {
             return {
                 status: 400,
-                body: { success: false, message: "El usuario ya está inscrito en este evento" }
+                body: { success: false, message: "El usuario ya está inscripto en este evento" }
             };
         }
 
@@ -206,6 +205,40 @@ export default class EventService {
                 body: { success: false, message: "Error al inscribir al usuario en el evento" }
             };
         }
+    }
+
+    deleteEnrollmentAsync = async(eventId, userId) => {
+        
+        const event = await this.eventRepository.getByIdAsync(eventId);
+        if (isTodayOrPast(event.start_date)) {
+            return {
+                status: 400,
+                body: { success: false, message: "No se puede inscribir a un evento que ya ha comenzado o es hoy" }
+            };
+        }
+        const enrolledUsers = await this.eventRepository.getEnrrolledUsersInEventByIdAsync(eventId);
+        const isEnrrolled = enrolledUsers.some(user => user.id_user === userId);
+        if (!isEnrrolled) {
+            return {
+                status: 400,
+                body: { success: false, message: "Aun no estas inscripto en ele vento" }
+            };
+        }
+
+        const result  = await this.eventRepository.deleteEnrollmentAsync(eventId, userId);
+        
+        if (result) {
+            return {
+                status: 200,
+                body: { success: true, message: "Inscripción eliminada correctamente" }
+            };
+        } else {
+            return {
+                status: 400,
+                body: { success: false, message: "No se pudo eliminar la inscripción" }
+            };
+        }
+
     }
 }
 

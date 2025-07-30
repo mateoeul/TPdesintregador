@@ -161,4 +161,18 @@ export default class EventRepository {
             return null;
         }
     }
+
+    deleteEnrollmentAsync = async(eventId, userId) => {
+        const client = new Client(DBconfig);
+        try {
+            await client.connect();
+            const result = await client.query("DELETE FROM event_enrollments WHERE id_event = $1 AND id_user = $2 RETURNING *", [eventId, userId]);
+            await client.end();
+            return result.rowCount > 0;
+        } catch (error) {
+            console.log("Error en deleteEnrollmentAsync:", error);
+            await client.end();
+            return false;
+        }
+    }
 }
