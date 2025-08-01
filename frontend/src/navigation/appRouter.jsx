@@ -8,20 +8,23 @@ import Landing from "../pages/Landing/Landing";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
 
+import PrivateRoute from "./PrivateRoute";
+
+
 const AppRouter = () => {
     return (
     <Router>
         <Routes>
-          <Route element={<MainLayout/>}>
+            <Route element={<PrivateRoute><MainLayout /></PrivateRoute>}>
                 <Route path="/home" element={<Home />} />
                 <Route path="/myevents" element={<MyEvents />} />
                 <Route path="/mylocations" element={<MyLocations />} />
-          </Route>    
+            </Route>
 
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
         </Routes>
     </Router>
     )

@@ -1,9 +1,22 @@
-import { Link } from "react-router-dom";
-import "./navButtonText.css"
+import { Link, useNavigate } from "react-router-dom";
+import "./navButtonText.css";
 
-const navButtonText = ({name, text}) =>{
+const NavButtonText = ({ name, text, onClick, className = ""  }) => {
+  const navigate = useNavigate();
 
-    return <Link to={name}> <h1>{text}</h1></Link>
-}
+  const handleClick = (e) => {
+    if (onClick) {
+      e.preventDefault();       
+      onClick();                
+      navigate(name);           
+    }
+  };
 
-export default navButtonText
+  return (
+    <Link to={name} onClick={handleClick} className={`nav-button ${className}`}>
+      <h1>{text}</h1>
+    </Link>
+  );
+};
+
+export default NavButtonText;

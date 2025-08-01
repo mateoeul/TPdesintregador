@@ -17,3 +17,13 @@ a:hover h1 {
     color: #fff;
     cursor: pointer;
 }
+
+
+a.logout h1 {
+    color: red;
+}
+
+a.logout:hover h1 {
+    background: #ffdddd;
+    color: darkred;
+}
