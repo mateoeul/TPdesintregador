@@ -17,13 +17,14 @@ const authService = {
         }
     },
 
-    async register(user) {
+    async register(first_name, last_name, username, password) {
         try {
-            const response = await axios.post(`${API_URL}register`, user);
+            const response = await axios.post(`${API_URL}register`, first_name, last_name, username, password);
+            this.login(username, password); // Automatically log in after registration
             return response.data;
         } catch (error) {
-            console.error("Error during registration:", error);
-            throw error;
+            const message = error.response?.data?.message || "Registration failed";
+            throw new Error(message);
         }
     },
 }
