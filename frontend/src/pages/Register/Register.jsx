@@ -38,11 +38,9 @@ const Register = () => {
         e.preventDefault();
         try {
             await authService.register(formData); 
-            const usuario = {
-                username: formData.username,
-                password: formData.password
-            }
-            setUser(usuario); // Set user context after registration
+            const loged = authService.login(formData.username, formData.password); // Automatically log in after registration
+            setUser(loged);
+
             navigate("/home");
         } catch (err) {
             setErrorMessage("Error al registrar usuario");

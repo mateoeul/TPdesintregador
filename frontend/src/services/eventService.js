@@ -5,7 +5,7 @@ const eventService = {
 
     async getAll() {
         try {
-            const response = await axios.get(`${API_URL}events`);
+            const response = await axios.get(`${API_URL}`);
             return response.data;
         } catch (error) {
             const message = error.response?.data?.message || "Failed to fetch events";

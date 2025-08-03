@@ -20,7 +20,6 @@ const authService = {
     async register(first_name, last_name, username, password) {
         try {
             const response = await axios.post(`${API_URL}register`, first_name, last_name, username, password);
-            this.login(username, password); // Automatically log in after registration
             return response.data;
         } catch (error) {
             const message = error.response?.data?.message || "Registration failed";
