@@ -64,9 +64,9 @@
     opacity: 0.8;
   }
   
-  .error-text {
+h6 {
     color: red;
-    margin-top: 10px;
-    font-weight: bold;
+  font-size: large;
+    font-weight: 100px;
   }
   

@@ -65,7 +65,7 @@ const EventDetail = () => {
             {loadingInscripcion ? "Inscribiendo..." : "INSCRIBITE"}
           </button>
           {inscripcionError && (
-            <p className="error-text">{inscripcionError}</p>
+            <h6 className="error-text">{inscripcionError}</h6>
           )}
         </>
       ) : (
