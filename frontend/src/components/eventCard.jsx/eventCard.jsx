@@ -1,6 +1,9 @@
 import "./eventCard.css";
+import { useNavigate } from "react-router-dom";
 
-const EventCard = ({ name, description, date, duration, price, capacity, enrollmentStatus }) => {
+const EventCard = ({id, name, description, date, duration, price, capacity, enrollmentStatus }) => {
+
+  const navigate = useNavigate()
   return (
     <div className="event-card">
       <h2 className="event-title">{name}</h2>
@@ -12,6 +15,8 @@ const EventCard = ({ name, description, date, duration, price, capacity, enrollm
       <p className={`event-status ${enrollmentStatus === "1" ? "open" : "closed"}`}>
         {enrollmentStatus === "1" ? "Inscripción abierta" : "Inscripción cerrada"}
       </p>
+
+      <button onClick={() => navigate(`/eventDetail/${id}`)}>Ver mas</button>
     </div>
   );
 };

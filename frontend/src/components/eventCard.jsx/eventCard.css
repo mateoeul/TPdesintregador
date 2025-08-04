@@ -100,3 +100,8 @@
 .event-status.closed {
   color: #b22222;
 }
+
+button{
+  border-color: black;
+  color: black;
+}

@@ -58,6 +58,7 @@ const Home = () => {
                     price={event.price}
                     capacity={event.max_assistance}
                     enrollmentStatus={event.enabled_for_enrollment}
+                    id={event.id}
                     />
                 ))}
                 </div>
