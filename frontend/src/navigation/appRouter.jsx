@@ -7,6 +7,7 @@ import MyLocations from "../pages/MyLocations/MyLocations";
 import Landing from "../pages/Landing/Landing";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
+import Results from "../pages/Results/Results";
 
 import PrivateRoute from "./PrivateRoute";
 
@@ -19,6 +20,7 @@ const AppRouter = () => {
                 <Route path="/home" element={<Home />} />
                 <Route path="/myevents" element={<MyEvents />} />
                 <Route path="/mylocations" element={<MyLocations />} />
+                <Route path="/results" element={<Results/>} />
             </Route>
 
             <Route path="/" element={<Landing />} />
