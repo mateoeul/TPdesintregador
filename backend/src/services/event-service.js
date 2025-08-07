@@ -240,6 +240,29 @@ export default class EventService {
         }
 
     }
+
+    userEnrolledEvents = async(userId) =>{
+        const result = await this.eventRepository.userEnrolledEvents(userId)
+        if (!result) {
+            return {
+                status: 500,
+                body: { success: false, message: "Error al buscar eventos del usuario." }
+            };
+        }
+    
+        if (result.length === 0) {
+            return {
+                status: 200,
+                body: { success: true, message: "No estás inscripto a ningún evento.", events: [] }
+            };
+        }
+    
+        return {
+            status: 200,
+            body: { success: true, message: "Eventos encontrados.", events: result }
+        };
+
+    }
 }
 
 

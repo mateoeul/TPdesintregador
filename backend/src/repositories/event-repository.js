@@ -175,4 +175,22 @@ export default class EventRepository {
             return false;
         }
     }
+
+    userEnrolledEvents = async(userId) => {
+        const client = new Client(DBconfig)
+        try {
+            await client.connect()
+            const result = await client.query(`
+                SELECT events.*
+                FROM event_enrollments
+                INNER JOIN events ON event_enrollments.id_event = events.id
+                WHERE event_enrollments.id_user = $1;
+            `, [userId])
+            await client.end();
+            return result.rows
+        } catch (error) {
+            await client.end();
+            return null;
+        }
+    }
 }

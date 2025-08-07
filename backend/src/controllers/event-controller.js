@@ -18,6 +18,19 @@ router.get('', async (req, res) => {
     }
 });
 
+router.get('/enrolled-events', authenticateToken, async(req,res) => {
+    const userId = req.user.id;
+    const result = await service.userEnrolledEvents(userId)
+    
+    if (result && result.status === 200) {
+        res.status(StatusCodes.OK).json(result.body);
+    } else if (result && result.status === 400) {
+        res.status(StatusCodes.BAD_REQUEST).json(result.body);
+    } else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error al dbuscar eventos" });
+    }
+})
+
 router.get('/:id', async (req, res) => {
     const { id } = req.params;  // Acceder al ID de la URL
     const event = await service.getByIdAsync(id);  // Buscar el evento en la base de datos
@@ -136,5 +149,7 @@ router.delete('/:id/enrollment', authenticateToken, async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error al desincribirse del evento" });
     }
 })
+
+
 
 export default router;
