@@ -52,6 +52,22 @@ const eventService = {
             const message = error.response?.data?.message || "No se pudo inscribir";
             throw new Error(message);
         }
+    },
+
+    async userEnrolledEvents(){
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const token = storedUser?.token;
+        try {
+            const response = await axios.get(`${API_URL}enrolled-events`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              })
+            return response.data
+        } catch (error) {
+            const message = error.response?.data?.message || "Failed to fetch events";
+            throw new Error(message);
+        }
     }
 };
 

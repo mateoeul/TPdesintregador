@@ -3,6 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 const EventCard = ({id, name, description, date, duration, price, capacity, enrollmentStatus }) => {
 
+  function isTodayOrPast(date) {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const eventDate = new Date(date);
+    eventDate.setHours(0,0,0,0);
+    return eventDate <= today;
+  }
+
   const navigate = useNavigate()
   return (
     <div className="event-card">
