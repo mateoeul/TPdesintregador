@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import eventService from "../../services/eventService";
+import { useNavigate } from "react-router-dom";
 import EventCard from "../../components/eventCard.jsx/eventCard";
 import "./MyEvents.css"
+
 const UserEnrolledEvents = () => {
+    const navigate = useNavigate()
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -45,7 +48,7 @@ const UserEnrolledEvents = () => {
     return (
         <div className="my-events-container">
             <div className="header-section">
-                <button className="add-event-btn">Agregar Evento</button>
+                <button className="add-event-btn" onClick={() => navigate("/create-event")}>Agregar Evento</button>
             </div>
     
             <h3 className="section-title">Eventos en los que te inscribiste</h3>

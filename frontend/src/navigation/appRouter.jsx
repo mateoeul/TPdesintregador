@@ -9,6 +9,7 @@ import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
 import Results from "../pages/Results/Results";
 import EventDetail from "../pages/EventDetail/EventDetail";
+import EventForm from "../pages/eventForm/eventForm";
 
 import PrivateRoute from "./PrivateRoute";
 
@@ -23,6 +24,7 @@ const AppRouter = () => {
                 <Route path="/mylocations" element={<MyLocations />} />
                 <Route path="/results" element={<Results/>} />
                 <Route path="/eventDetail/:id" element={<EventDetail />} />
+                <Route path="/create-event" element={<EventForm />} />
             </Route>
 
             <Route path="/" element={<Landing />} />
