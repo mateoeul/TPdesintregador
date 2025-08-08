@@ -54,6 +54,26 @@ const eventService = {
         }
     },
 
+    async unsubscribeFromEvent(idEvent){
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+            const token = storedUser?.token;
+            const response = await axios.delete(
+                `${API_URL}${idEvent}/enrollment`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+            
+            return response.data;
+        } catch (error) {
+            const message = error.response?.data?.message || "No se pudo desinscribir";
+            throw new Error(message);
+        }
+    },
+
     async userEnrolledEvents(){
         const storedUser = JSON.parse(localStorage.getItem("user"));
         const token = storedUser?.token;
@@ -69,6 +89,8 @@ const eventService = {
             throw new Error(message);
         }
     }
+
+
 };
 
 export default eventService;

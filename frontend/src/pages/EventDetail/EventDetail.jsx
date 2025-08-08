@@ -11,6 +11,7 @@ const EventDetail = () => {
 
   const [loadingInscripcion, setLoadingInscripcion] = useState(false);
   const [inscripcionError, setInscripcionError] = useState(null);
+  const [estaInscripto, setEstaInscripto] = useState(false);
 
   useEffect(() => {
     const fetchEvento = async () => {
@@ -23,7 +24,25 @@ const EventDetail = () => {
         setLoading(false);
       }
     };
+
+    const checkInscripcion = async () => {
+      try {
+        const response = await eventService.userEnrolledEvents(); // ✅ devuelve { events: [...] }
+        console.log("Eventos inscriptos:", response.events);
+
+        const eventosInscriptoIds = response.events.map(e => e.id);
+        console.log("IDs de eventos inscriptos:", eventosInscriptoIds);
+
+        const isEnrolled = eventosInscriptoIds.includes(parseInt(id)); 
+        setEstaInscripto(isEnrolled);
+        console.log("¿Está inscripto?:", isEnrolled);
+      } catch (err) {
+        console.error("Error al verificar inscripción:", err);
+      }
+    };
+
     fetchEvento();
+    checkInscripcion();
   }, [id]);
 
   const handleInscripcion = async () => {
@@ -31,9 +50,24 @@ const EventDetail = () => {
     setLoadingInscripcion(true);
     try {
       await eventService.enrollInEvent(id);
+      setEstaInscripto(true);
       alert("¡Te inscribiste con éxito!");
     } catch (error) {
       setInscripcionError(error.message || "Ocurrió un error al inscribirte.");
+    } finally {
+      setLoadingInscripcion(false);
+    }
+  };
+
+  const handleDesinscripcion = async () => {
+    setInscripcionError(null);
+    setLoadingInscripcion(true);
+    try {
+      await eventService.unsubscribeFromEvent(id); // ✅ asegurate de tener este método
+      setEstaInscripto(false);
+      alert("Te desinscribiste con éxito.");
+    } catch (error) {
+      setInscripcionError(error.message || "Ocurrió un error al desinscribirte.");
     } finally {
       setLoadingInscripcion(false);
     }
@@ -57,13 +91,23 @@ const EventDetail = () => {
 
       {evento.enabled_for_enrollment === "1" ? (
         <>
-          <button
-            className="btn-inscribite"
-            onClick={handleInscripcion}
-            disabled={loadingInscripcion}
-          >
-            {loadingInscripcion ? "Inscribiendo..." : "INSCRIBITE"}
-          </button>
+          {estaInscripto ? (
+  <button
+    className="btn-desinscribirse"
+    onClick={handleDesinscripcion}
+    disabled={loadingInscripcion}
+  >
+    {loadingInscripcion ? "Desinscribiendo..." : "DESINSCRIBIRSE"}
+  </button>
+) : (
+  <button
+    className="btn-inscribite"
+    onClick={handleInscripcion}
+    disabled={loadingInscripcion}
+  >
+    {loadingInscripcion ? "Inscribiendo..." : "INSCRIBITE"}
+  </button>
+)}
           {inscripcionError && (
             <h6 className="error-text">{inscripcionError}</h6>
           )}

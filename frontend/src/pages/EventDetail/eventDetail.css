@@ -70,3 +70,19 @@ h6 {
     font-weight: 100px;
   }
   
+
+  .btn-desinscribirse {
+    background-color: #e74c3c; /* rojo */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-desinscribirse:hover {
+    background-color: #c0392b; /* rojo oscuro al pasar el mouse */
+  }
+  
