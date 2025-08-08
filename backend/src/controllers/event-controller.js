@@ -108,6 +108,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 
 });
 
+
 router.post('/:id/enrollment', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const {description, attended, observations, rating} = req.body;

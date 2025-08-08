@@ -213,7 +213,7 @@ export default class EventService {
         if (isTodayOrPast(event.start_date)) {
             return {
                 status: 400,
-                body: { success: false, message: "No se puede inscribir a un evento que ya ha comenzado o es hoy" }
+                body: { success: false, message: "El evento ya termino" }
             };
         }
         const enrolledUsers = await this.eventRepository.getEnrrolledUsersInEventByIdAsync(eventId);
