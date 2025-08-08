@@ -6,6 +6,34 @@ import { authenticateToken } from "../middleware/auth-middleware.js";
 const router = Router();
 const service = new EventLocationService();
 
+router.get('/all', async(req,res) => {
+    try {
+        const returnArray = await service.getAllAsync();
+
+        if (returnArray != null) {
+            return res.status(StatusCodes.OK).json(returnArray);
+        } else {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal error");
+        }
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal error");
+    }
+})
+
+router.get('/all-categories', async(req,res) => {
+    try {
+        const returnArray = await service.getAllCategoriesAsync();
+
+        if (returnArray != null) {
+            return res.status(StatusCodes.OK).json(returnArray);
+        } else {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal error");
+        }
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal error");
+    }
+})
+
 // GET /api/event-location - Obtener todas las ubicaciones del usuario autenticado
 router.get('', authenticateToken, async (req, res) => {
     try {
@@ -61,5 +89,7 @@ router.post('', authenticateToken, async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal error");
     }
 });
+
+
 
 export default router;

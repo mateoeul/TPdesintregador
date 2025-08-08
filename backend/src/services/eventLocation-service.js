@@ -9,6 +9,10 @@ export default class EventLocationService {
         return await this.eventLocationRepository.getAllAsync();
     }
     
+    getAllCategoriesAsync = async () => {
+        return await this.eventLocationRepository.getAllCategoriesAsync();
+    }
+
     getAllByUserIdAsync = async (userId) => {
         return await this.eventLocationRepository.getAllByUserIdAsync(userId);
     }

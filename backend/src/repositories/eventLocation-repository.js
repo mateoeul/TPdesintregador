@@ -21,6 +21,22 @@ export default class EventLocationRepository {
         return returnArray;
     }
 
+    getAllCategoriesAsync = async () => {
+        let returnArray = null;
+        const client = new Client(DBconfig)
+
+        try {
+            await client.connect();
+            const result = await client.query("SELECT * FROM event_categories");
+            await client.end();
+            returnArray = result.rows;
+        } catch (error) {
+            console.log("Error en getAllAsync:", error);
+        }
+
+        return returnArray;
+    }
+
     getAllByUserIdAsync = async (userId) => {
         let returnArray = null;
         const client = new Client(DBconfig)
