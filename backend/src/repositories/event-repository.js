@@ -140,6 +140,11 @@ export default class EventRepository {
         const client = new Client(DBconfig);
         try {
             await client.connect();
+            
+            // Primero eliminar todas las inscripciones del evento
+            await client.query("DELETE FROM event_enrollments WHERE id_event = $1", [id]);
+            
+            // Luego eliminar el evento
             const result = await client.query("DELETE FROM events WHERE id = $1 RETURNING *", [id]);
             await client.end();
             return result.rowCount > 0
