@@ -17,6 +17,65 @@ const eventService = {
             throw new Error(message);
         }
     },
+    
+    async createEvent(payload){
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+            const token = storedUser?.token;
+            const response = await axios.post(
+                `${API_URL}`,
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            const message = error.response?.data?.message || "No se pudo crear el evento";
+            throw new Error(message);
+        }
+    },
+
+    async updateEvent(id, payload){
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+            const token = storedUser?.token;
+            const response = await axios.put(
+                `${API_URL}${id}`,
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            const message = error.response?.data?.message || "No se pudo actualizar el evento";
+            throw new Error(message);
+        }
+    },
+
+    async deleteEvent(id){
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+            const token = storedUser?.token;
+            const response = await axios.delete(
+                `${API_URL}${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            const message = error.response?.data?.message || "No se pudo eliminar el evento";
+            throw new Error(message);
+        }
+    },
 
     async getById(id){
         try {
@@ -86,6 +145,22 @@ const eventService = {
             return response.data
         } catch (error) {
             const message = error.response?.data?.message || "Failed to fetch events";
+            throw new Error(message);
+        }
+    },
+
+    async userCreatedEvents(){
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const token = storedUser?.token;
+        try {
+            const response = await axios.get(`${API_URL}created-events`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              })
+            return response.data
+        } catch (error) {
+            const message = error.response?.data?.message || "Failed to fetch created events";
             throw new Error(message);
         }
     }

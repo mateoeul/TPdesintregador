@@ -7,16 +7,20 @@ import "./MyEvents.css"
 const UserEnrolledEvents = () => {
     const navigate = useNavigate()
     const [events, setEvents] = useState([]);
+    const [createdEvents, setCreatedEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const data = await eventService.userEnrolledEvents();
-                if (data.events) {
-                    setEvents(data.events);
-                }
+                const [enrolledRes, createdRes] = await Promise.all([
+                    eventService.userEnrolledEvents(),
+                    eventService.userCreatedEvents(),
+                ]);
+
+                if (enrolledRes?.events) setEvents(enrolledRes.events);
+                if (createdRes?.events) setCreatedEvents(createdRes.events);
                 setError(null);
             } catch (err) {
                 setError(err.message);
@@ -41,33 +45,68 @@ const UserEnrolledEvents = () => {
         return <p className="error-message">Error: {error}</p>;
     }
 
-    if (events.length === 0) {
-        return <p>No estás inscripto a ningún evento.</p>;
-    }
-
     return (
         <div className="my-events-container">
+            <h2 style={{ margin: 0, fontSize: "26px", fontWeight: 800 }}>Mis eventos</h2>
             <div className="header-section">
                 <button className="add-event-btn" onClick={() => navigate("/create-event")}>Agregar Evento</button>
             </div>
-    
+
+            <h3 className="section-title">Tus eventos creados</h3>
+            <p className="section-subtitle">Eventos que vos publicaste.</p>
+            {createdEvents.length === 0 ? (
+                <p>No tenés eventos creados.</p>
+            ) : (
+                <div className="event-list" style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                    gap: 24,
+                    alignItems: "stretch",
+                    justifyItems: "stretch",
+                }}>
+                    {createdEvents.map((event) => (
+                        <EventCard
+                            key={event.id}
+                            name={event.name}
+                            description={event.description}
+                            date={event.start_date}
+                            duration={event.duration_in_minutes}
+                            price={event.price}
+                            capacity={event.max_assistance}
+                            enrollmentStatus={event.enabled_for_enrollment}
+                            id={event.id}
+                        />
+                    ))}
+                </div>
+            )}
+
             <h3 className="section-title">Eventos en los que te inscribiste</h3>
-    
-            <div className="event-list">
-                {events.map((event) => (
-                    <EventCard
-                        key={event.id}
-                        name={event.name}
-                        description={event.description}
-                        date={event.start_date}
-                        duration={event.duration_in_minutes}
-                        price={event.price}
-                        capacity={event.max_assistance}
-                        enrollmentStatus={event.enabled_for_enrollment}
-                        id={event.id}
-                    />
-                ))}
-            </div>
+            <p className="section-subtitle">Eventos a los que te anotaste.</p>
+            {events.length === 0 ? (
+                <p>No estás inscripto a ningún evento.</p>
+            ) : (
+                <div className="event-list" style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                    gap: 24,
+                    alignItems: "stretch",
+                    justifyItems: "stretch",
+                }}>
+                    {events.map((event) => (
+                        <EventCard
+                            key={event.id}
+                            name={event.name}
+                            description={event.description}
+                            date={event.start_date}
+                            duration={event.duration_in_minutes}
+                            price={event.price}
+                            capacity={event.max_assistance}
+                            enrollmentStatus={event.enabled_for_enrollment}
+                            id={event.id}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
     

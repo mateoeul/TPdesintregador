@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import eventService from "../../services/eventService";
+import eventLocationsService from "../../services/event_locationService";
 import "./eventForm.css";
 
 const EventForm = () => {
@@ -22,6 +23,9 @@ const EventForm = () => {
   const [loading, setLoading] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [loadingOptions, setLoadingOptions] = useState(false);
 
   // Si hay id, cargo el evento para editar
   useEffect(() => {
@@ -51,6 +55,26 @@ const EventForm = () => {
 
     fetchEvent();
   }, [id]);
+
+  // Cargar categorías y ubicaciones para selects
+  useEffect(() => {
+    const loadOptions = async () => {
+      setLoadingOptions(true);
+      try {
+        const [cats, locs] = await Promise.all([
+          eventLocationsService.getAllCategories(),
+          eventLocationsService.getAllLocations(),
+        ]);
+        setCategories(Array.isArray(cats) ? cats : []);
+        setLocations(Array.isArray(locs) ? locs : []);
+      } catch (e) {
+        // opcional: mostrar error general
+      } finally {
+        setLoadingOptions(false);
+      }
+    };
+    loadOptions();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -92,6 +116,8 @@ const EventForm = () => {
         await eventService.createEvent(payload);
         alert("Evento creado con éxito!");
       }
+      // invalidar cache de Home para que refetchee
+      try { sessionStorage.removeItem("cachedEvents"); } catch {}
       navigate("/myevents"); // o donde tengas la lista de eventos
     } catch (err) {
       setError(err.message || "Error al guardar el evento.");
@@ -108,6 +134,8 @@ const EventForm = () => {
     try {
       await eventService.deleteEvent(id);
       alert("Evento eliminado con éxito!");
+      // invalidar cache de Home para que refetchee
+      try { sessionStorage.removeItem("cachedEvents"); } catch {}
       navigate("/myevents");
     } catch (err) {
       setError(err.message || "Error al eliminar el evento.");
@@ -149,29 +177,43 @@ const EventForm = () => {
         </label>
 
         <label>
-          Categoría (ID):
-          <input
-            type="number"
+          Categoría:
+          <select
             name="id_event_category"
             value={form.id_event_category}
             onChange={handleChange}
-            disabled={loading || loadingDelete}
-            min={1}
+            disabled={loading || loadingDelete || loadingOptions}
             required
-          />
+          >
+            <option value="" disabled>
+              {loadingOptions ? "Cargando categorías..." : "Seleccioná una categoría"}
+            </option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label>
-          Ubicación (ID):
-          <input
-            type="number"
+          Ubicación:
+          <select
             name="id_event_location"
             value={form.id_event_location}
             onChange={handleChange}
-            disabled={loading || loadingDelete}
-            min={1}
+            disabled={loading || loadingDelete || loadingOptions}
             required
-          />
+          >
+            <option value="" disabled>
+              {loadingOptions ? "Cargando ubicaciones..." : "Seleccioná una ubicación"}
+            </option>
+            {locations.map((loc) => (
+              <option key={loc.id} value={loc.id}>
+                {loc.name}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label>
