@@ -60,18 +60,35 @@ export default class EventRepository {
         }
     }
 
-    async existsEvent(name, start_date, id_event_location) {
+    async existsEventSameDayAndLocation(start_date, id_event_location) {
         const client = new Client(DBconfig);
         try {
             await client.connect();
             const result = await client.query(
-                "SELECT 1 FROM events WHERE name = $1 AND start_date = $2 AND id_event_location = $3",
-                [name, start_date, id_event_location]
+                "SELECT 1 FROM events WHERE DATE(start_date) = DATE($1) AND id_event_location = $2",
+                [start_date, id_event_location]
             );
             await client.end();
             return result.rowCount > 0;
         } catch (error) {
-            console.log("Error en existsEvent:", error);
+            console.log("Error en existsEventSameDayAndLocation:", error);
+            await client.end();
+            return false;
+        }
+    }
+
+    async existsEventSameDayAndLocationExcludingId(id, start_date, id_event_location) {
+        const client = new Client(DBconfig);
+        try {
+            await client.connect();
+            const result = await client.query(
+                "SELECT 1 FROM events WHERE id <> $1 AND DATE(start_date) = DATE($2) AND id_event_location = $3",
+                [id, start_date, id_event_location]
+            );
+            await client.end();
+            return result.rowCount > 0;
+        } catch (error) {
+            console.log("Error en existsEventSameDayAndLocationExcludingId:", error);
             await client.end();
             return false;
         }
@@ -185,6 +202,24 @@ export default class EventRepository {
                 FROM event_enrollments
                 INNER JOIN events ON event_enrollments.id_event = events.id
                 WHERE event_enrollments.id_user = $1;
+            `, [userId])
+            await client.end();
+            return result.rows
+        } catch (error) {
+            await client.end();
+            return null;
+        }
+    }
+
+    userCreatedEvents = async(userId) => {
+        const client = new Client(DBconfig)
+        try {
+            await client.connect()
+            const result = await client.query(`
+                SELECT *
+                FROM events
+                WHERE id_creator_user = $1
+                ORDER BY start_date DESC;
             `, [userId])
             await client.end();
             return result.rows
