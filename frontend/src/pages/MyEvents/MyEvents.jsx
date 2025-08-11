@@ -32,6 +32,33 @@ const UserEnrolledEvents = () => {
         fetchEvents();
     }, []);
 
+    const handleEditEvent = (eventId) => {
+        navigate(`/edit-event/${eventId}`);
+    };
+
+    const handleDeleteEvent = async (eventId) => {
+        if (window.confirm("¿Estás seguro de que querés eliminar este evento?")) {
+            try {
+                await eventService.deleteEvent(eventId);
+                // Actualizar la lista de eventos creados
+                setCreatedEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
+                alert("Evento eliminado exitosamente");
+            } catch (error) {
+                // Mostrar mensaje de error más claro
+                if (error.message.includes("usuarios inscritos")) {
+                    const userChoice = window.confirm(
+                        `${error.message}\n\n¿Querés que te lleve a la página del evento para ver las inscripciones?`
+                    );
+                    if (userChoice) {
+                        navigate(`/eventDetail/${eventId}`);
+                    }
+                } else {
+                    alert(`Error al eliminar el evento: ${error.message}`);
+                }
+            }
+        }
+    };
+
     if (loading) {
         return (
             <div className="spinner-container">
@@ -75,6 +102,9 @@ const UserEnrolledEvents = () => {
                             capacity={event.max_assistance}
                             enrollmentStatus={event.enabled_for_enrollment}
                             id={event.id}
+                            showActions={true}
+                            onEdit={handleEditEvent}
+                            onDelete={handleDeleteEvent}
                         />
                     ))}
                 </div>
@@ -103,6 +133,7 @@ const UserEnrolledEvents = () => {
                             capacity={event.max_assistance}
                             enrollmentStatus={event.enabled_for_enrollment}
                             id={event.id}
+                            showActions={false}
                         />
                     ))}
                 </div>

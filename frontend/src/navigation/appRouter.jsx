@@ -25,6 +25,7 @@ const AppRouter = () => {
                 <Route path="/results" element={<Results/>} />
                 <Route path="/eventDetail/:id" element={<EventDetail />} />
                 <Route path="/create-event" element={<EventForm />} />
+                <Route path="/edit-event/:id" element={<EventForm />} />
             </Route>
 
             <Route path="/" element={<Landing />} />
